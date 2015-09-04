@@ -220,10 +220,16 @@ define docker::run(
         } ->
         File[$initscript]
       }
+      if $uses_systemd {
+        $provider = 'systemd'
+      } else {
+        $provider = 'default'
+      }
 
       service { "${service_prefix}${sanitised_title}":
         ensure    => $running,
         enable    => true,
+        provider  => $provider,
         hasstatus => $hasstatus,
         require   => File[$initscript],
       }
