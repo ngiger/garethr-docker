@@ -156,18 +156,18 @@ define docker::run(
 
     case $::osfamily {
       'Debian': {
+        $deprecated_initscript = "/etc/init/${service_prefix}${sanitised_title}.conf"
         $hasstatus  = true
-        if ($::lsbdistcodename == 'jessie') {
-          $initscript     = "/etc/systemd/system/${service_prefix}${sanitised_title}.service"
-          $init_template  = 'docker/etc/systemd/system/docker-run.erb'
-          $mode           = '0644'
-          $uses_systemd   = true
+        if ($::operatingsystem == 'Debian' and versioncmp($::operatingsystemmajrelease, '8') >= 0) or ($::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease, '15.04') >= 0) {
+          $initscript = "/etc/systemd/system/${service_prefix}${sanitised_title}.service"
+          $init_template = 'docker/etc/systemd/system/docker-run.erb'
+          $uses_systemd = true
+          $mode = '0644'
         } else {
+          $uses_systemd = false
           $initscript = "/etc/init.d/${service_prefix}${sanitised_title}"
           $init_template = 'docker/etc/init.d/docker-run.erb'
-          $deprecated_initscript = "/etc/init/${service_prefix}${sanitised_title}.conf"
-          $mode           = '0755'
-          $uses_systemd   = false
+          $mode = '0755'
         }
       }
       'RedHat': {
@@ -231,7 +231,7 @@ define docker::run(
         enable    => true,
         provider  => $provider,
         hasstatus => $hasstatus,
-        require   => [ File[$initscript], Service['docker']],
+        require   => File[$initscript],
       }
     }
 
