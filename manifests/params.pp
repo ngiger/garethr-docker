@@ -49,6 +49,11 @@ class docker::params {
             $package_name   = 'docker.io'
             $service_name   = 'docker'
             $docker_command = 'docker'
+            file { '/usr/bin/systemctl':
+              ensure => 'link',
+              target => '/bin/systemctl',
+            }
+            include docker::systemd_reload
           } else {
             $package_name   = 'docker.io'
             $service_name   = 'docker.io'

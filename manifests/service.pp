@@ -67,11 +67,13 @@ class docker::service (
         }
       }
 
-      file { "/etc/default/${service_name}":
-        ensure  => present,
-        force   => true,
-        content => template('docker/etc/default/docker.erb'),
-        notify  => Service['docker'],
+      if ($::lsbdistcodename != 'jessie') {
+        file { "/etc/default/${service_name}":
+          ensure  => present,
+          force   => true,
+          content => template('docker/etc/default/docker.erb'),
+          notify  => Service['docker'],
+        }
       }
     }
     'RedHat': {
@@ -123,6 +125,7 @@ class docker::service (
   }
 
   $provider = $::operatingsystem ? {
+#    'Debian' => 'systemd',
     'Ubuntu' => 'upstart',
     default  => undef,
   }

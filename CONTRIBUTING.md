@@ -58,6 +58,10 @@ with:
 
     bundle exec rake spec
 
+If you want to run only tests matching a pattern (eg. wheezy) used
+
+    bundle exec rake spec SPEC_OPTS="-e 'wheezy'"
+
 Note also you can run the syntax, style and unit tests in one go with:
 
     bundle exec rake test
